@@ -39,8 +39,7 @@ img {
     font-family: Courier New, Courier, monospace;
      }
 body {  
-    background-repeat: no-repeat;
-    background-position: center;
+  background-color: gainsboro;
 }
 #imageArea{
     position: relative;
