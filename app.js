@@ -1,5 +1,6 @@
 'use strict';
 ////////////////////working...\\\\\\\\\\\\\\\\\\\\
+
 var pathToImages = ['bag.jpg', 'banana.jpg', 'bathroom.jpg', 'boots.jpg', 'breakfast.jpg', 'bubblegum.jpg',
   'chair.jpg', 'cthulhu.jpg', 'dog-duck.jpg', 'dragon.jpg', 'pen.jpg', 'pet-sweep.jpg', 'scissors.jpg',
   'shark.jpg', 'sweep.png', 'tauntaun.jpg', 'unicorn.jpg', 'usb.gif', 'water-can.jpg','wine-glass.jpg'];
@@ -14,8 +15,19 @@ var imageTres = document.getElementById('image3');
 var totalVotes = 0;
 var theChart = document.getElementById('chart');
 
-function generateRandomNumber() {
-  return Math.floor(Math.random() * pathToImages.length);
+function clickHandler(event) {
+  if (totalVotes !== 25){
+    var clickedImagePath = event.target.src.split('assets/')[1];
+    var clickedImageIndex = pathToImages.indexOf(clickedImagePath);
+    items[clickedImageIndex].clicked += 1;
+    totalVotes += 1;
+
+    changePicture();
+    saveData();
+  }
+  if (totalVotes === 25){
+    displayChart();
+  }
 }
 
 function changePicture(){
@@ -46,11 +58,27 @@ function changePicture(){
   indexThree = randomIndex3;
 }
 
-function fluxCapacitor(){
-  for (var i = 0; i < pathToImages.length; i++) {
-    items.push(new Item(pathToImages[i]));
-  }
+function generateRandomNumber() {
+  return Math.floor(Math.random() * pathToImages.length);
+}
 
+function init() {
+  var dataItems = localStorage.getItem('items');
+  if(dataItems) {
+    items = JSON.parse(dataItems);
+    indexOne = parseInt(localStorage.getItem('indexOne') );
+    indexTwo = parseInt(localStorage.getItem('indexTwo') );
+    indexThree = parseInt(localStorage.getItem('indexThree') );
+    totalVotes = parseInt(localStorage.getItem('totalVotes') );
+
+    if (totalVotes === 25){
+      totalVotes = 0;
+    }
+  }else{
+    for(var i = 0; i < pathToImages.length; i++){
+      items.push(new Item(pathToImages[i]) );
+    }
+  }
   imageUno.src = items[indexOne].filepath;
   imageDos.src = items[indexTwo].filepath;
   imageTres.src = items[indexThree].filepath;
@@ -60,21 +88,7 @@ function fluxCapacitor(){
   items[indexThree].shown += 1;
 }
 
-function clickHandler(event) {
-  if (totalVotes != 25){
 
-    var clickedImagePath = event.target.src.split('assets/')[1];
-    var clickedImageIndex = pathToImages.indexOf(clickedImagePath);
-    items[clickedImageIndex].clicked += 1;
-    totalVotes += 1;
-
-    displayChart();
-    changePicture();
-  }
-  if (totalVotes === 25){
-    displayChart();
-  }
-}
 
 function Item(path) {
   this.name = path.split('.')[0];
@@ -162,7 +176,15 @@ function displayChart() {
     }
   };
   new Chart(theChart, chartData);
-}
 
-fluxCapacitor();
+};
+
+function saveData() {
+  localStorage.setItem('items',JSON.stringify(items) );
+  localStorage.setItem('indexOne', indexOne);
+  localStorage.setItem('indexTwo', indexTwo);
+  localStorage.setItem('indexThree', indexThree);
+  localStorage.setItem('totalVotes', totalVotes);
+}
+init();
 imageZone.addEventListener('click', clickHandler);
